@@ -28,8 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
-
+    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -55,12 +54,6 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
-
-    protected function registered($request, $user)
-    {
-        return redirect('/login');
-    }
-
 
     /**
      * Create a new user instance after a valid registration.

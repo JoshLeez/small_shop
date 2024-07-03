@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,10 +13,17 @@ use App\Http\Controllers\ProductController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 //Product
-Route::get('/admin/product',[ProductController::class, 'index'])->name('product.index');
-Route::post('/admin/product/create',[ProductController::class, 'create'])->name('product.create');
-
-Auth::routes();
+Route::group([
+    'controller' => App\Http\Controllers\ProductController::class,
+    'prefix'=> 'admin/product',
+    'as'=>'product.'
+], function () {
+    //Route:;get(url, class function) => name('name for route');
+    Route::get('', 'index')->name('index');
+    Route::get('dtable-product', 'dtable')->name('dtable');
+    Route::post('create-product','store')->name('create');
+});
