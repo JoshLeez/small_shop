@@ -18,6 +18,9 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 //Product
 Route::group([
+    'middleware' => [
+        'auth',
+    ],
     'controller' => App\Http\Controllers\ProductController::class,
     'prefix'=> 'admin/product',
     'as'=>'product.'

@@ -44,6 +44,7 @@
                         <th width="" class="text-center">Name</th>
                         <th width="" class="text-center">Price</th>
                         <th width="" class="text-center">Quantity</th>
+                        <th width="" class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,15 +109,18 @@
             console.log("{{route ('product.create')}}")
         }
 
-        const show_modal_edit = async (modal_element_id, user_id) => {
+        const show_modal_edit = (modal_element_id, product_id) => {
             let modal_data = {
                 modal_id: modal_element_id,
-                title: "Edit User",
+                title: "Edit Product",
                 btn_submit: "Save",
-                form_action_url: update_url.replace(':id', user_id),
+                form_action_url : store_url,
             }
             clear_form(modal_data);
+            $(`#${modal_element_id}`).modal('show');
+
         }
+
         const submitForm = async (modal_id) => {
             try {
                 console.log(modal_id)
@@ -138,22 +142,26 @@
                     },
                     body: JSON.stringify(formData)
                 });
-                console.log(response)
-                if(response.status === 200){
-                    // "{{ route('product.dtable') }}".()
+
+                const responseData = await response.json();
+
+                console.log(responseData)
+                if (response.ok) { // HTTP status in the range 200-299
                     Swal.fire({
-                        title: response.status,
-                        text : "Berhasil Membuat Product",
-                        icon : "success"
-                    })
-                }else{
+                        type: responseData.status,  // Use the icon from response or default to "success"
+                        title: responseData.status,
+                        text: responseData.message,
+                 });
+                 $('#tbl_list').DataTable().ajax.reload(null, false); 
+                } else {
                     Swal.fire({
-                        icon: "error",
-                        title: "something went wrong",
+                        type : responseData.status, // Use the icon from response or default to "error"
+                        title: responseData.status,
+                        text: responseData.message,
                         showConfirmButton: true,
-                    })
+                    });
                 }
-            $(`#${modal_id}`).modal('hide');
+                $(`#${modal_id}`).modal('hide');
 
             } catch (error) {
                 console.log(error)
@@ -196,6 +204,10 @@
                         data: 'qty',
                         name: 'qty'
                     },
+                    {
+                        data: 'action',
+                        name: 'action'
+                    }
                 ]
             });
 
