@@ -24,10 +24,11 @@
             <div class="row  mb-3">
                 <div class="col-sm-12 d-inline-flex justify-content-end">
                     <div class="filter_wrapper mr-2" style="width:200px;">
-                        <select name="data_status" id="data_status" class="form-control select2 no-search-box">
-                            <option value="">All Data</option>
-                            <option value="1" selected> Active Only </option>
-                            <option value="2"> Deleted Only </option>
+                        <select name="data_range" id="data_range" class="form-control select2 no-search-box">
+                            <option value=0 selected>All Data</option>
+                            <option value="0 - 100">0 - 100</option>
+                            <option value="100 - 500">100 - 500</option>
+                            <option value="500 - 0">500 - All</option>
                         </select>
                     </div>
                     <div class="filter_wrapper text-right align-self-center">
@@ -96,41 +97,62 @@
     <script type="text/javascript">
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const store_url = "{{ route('product.create') }}";
+        const edit_url = "{{ route('product.edit', 'id') }}";
+        const update_url = "{{ route('product.update', 'id') }}";
+        const destroy_url = "{{ route('product.destroy', 'id') }}";
 
         const show_modal_create = (modal_element_id) => {
             let modal_data = {
                 modal_id: modal_element_id,
                 title: "Add New Product",
                 btn_submit: "Add Product",
-                form_action_url : store_url,
+                form_action_url: store_url,
             }
             clear_form(modal_data);
             $(`#${modal_element_id}`).modal('show');
-            console.log("{{route ('product.create')}}")
         }
 
-        const show_modal_edit = (modal_element_id, product_id) => {
+        const show_modal_edit = async (modal_element_id, product_id) => {
             let modal_data = {
                 modal_id: modal_element_id,
                 title: "Edit Product",
                 btn_submit: "Save",
-                form_action_url : store_url,
+                form_action_url: update_url.replace('id', product_id),
             }
             clear_form(modal_data);
+
+            const response = await fetch(edit_url.replace('id', product_id), {
+                method: "GET",
+                mode: "cors",
+                cache: "no-cache",
+                credentials: "same-origin",
+                redirect: "follow",
+                referrerPolicy: "no-referrer",
+                headers: {
+                    "Content-Type": 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const editData = await response.json();
+                $(`#name`).val(editData.data.name);
+                $(`#price`).val(editData.data.price);
+                $(`#qty`).val(editData.data.qty);
+                $(`#edit_user_id`).val(editData.data.id);
+
+            }
+
             $(`#${modal_element_id}`).modal('show');
 
         }
-
         const submitForm = async (modal_id) => {
             try {
-                console.log(modal_id)
                 let modal = document.getElementById(modal_id)
                 let form = modal.querySelector('form');
                 let formData = getFormData(form);
-                console.log(formData)
-                // return false
-                const response = await fetch(store_url, {
-                    method: "POST",
+                let edit_modal = form.querySelector('#edit_user_id').value;
+                const response = await fetch(edit_modal ? update_url.replace('id', edit_modal) : store_url, {
+                    method: edit_modal ? "PUT" : "POST",
                     mode: "cors",
                     cache: "no-cache",
                     credentials: "same-origin",
@@ -142,20 +164,17 @@
                     },
                     body: JSON.stringify(formData)
                 });
-
                 const responseData = await response.json();
-
-                console.log(responseData)
                 if (response.ok) { // HTTP status in the range 200-299
                     Swal.fire({
-                        type: responseData.status,  // Use the icon from response or default to "success"
+                        type: responseData.status, // Use the icon from response or default to "success"
                         title: responseData.status,
                         text: responseData.message,
-                 });
-                 $('#tbl_list').DataTable().ajax.reload(null, false); 
+                    });
+                    $('#tbl_list').DataTable().ajax.reload(null, false);
                 } else {
                     Swal.fire({
-                        type : responseData.status, // Use the icon from response or default to "error"
+                        type: responseData.status, // Use the icon from response or default to "error"
                         title: responseData.status,
                         text: responseData.message,
                         showConfirmButton: true,
@@ -167,24 +186,68 @@
                 console.log(error)
             }
         }
+
+        const show_modal_delete = async (id) => {
+            const result = await Swal.fire({
+                title: "Apakah anda yakin ingin menghapus product?",
+                type: "warning",
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Ya, hapus",
+                cancelButtonText: "Batal"
+            });
+
+            if (result.value) {
+                try {
+                    const response = await fetch(destroy_url.replace('id', id), {
+                        method: "DELETE",
+                        mode: "cors",
+                        cache: "no-cache",
+                        credentials: "same-origin",
+                        redirect: "follow",
+                        referrerPolicy: "no-referrer",
+                        headers: {
+                            "X-CSRF-TOKEN": token,
+                            "Content-Type": 'application/json',
+                        },
+                    })
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: "Produk berhasil dihapus",
+                            icon: "success",
+                        });
+                        $('#tbl_list').DataTable().ajax.reload(null, false);
+                    }
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    // Handle network errors or other exceptions
+                    Swal.fire({
+                        title: "Terjadi kesalahan",
+                        text: "Gagal menghapus produk. Silakan coba lagi nanti.",
+                        icon: "error",
+                    });
+                }
+            }
+
+        }
+
+        $("#reload_table_btn").click(function() {
+            $('#tbl_list').DataTable().ajax.reload(null, false);
+        }) //tombol untuk reload table
     </script>
 
     <script type="text/javascript">
         $(function() {
             let tableurl = "{{ route('product.dtable') }}"
             var table = $('#tbl_list').DataTable({
-                paging: true,
-                responsive: true,
-                lengthChange: true,
-                searching: true,
-                autoWidth: false,
-                orderCellsTop: true,
-                searchDelay: 500,
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: tableurl,
-
+                    data: function(d) {
+                        d.data_range = $('#data_range').val();
+                    },
                 },
                 columns: [{
                         data: 'DT_RowIndex',
@@ -206,11 +269,22 @@
                     },
                     {
                         data: 'action',
-                        name: 'action'
+                        name: 'action',
+                        orderable: 'false',
+                        searchable: 'false',
                     }
-                ]
+                ],
+                paging: true,
+                responsive: true,
+                lengthChange: true,
+                searching: true,
+                autoWidth: false,
+                orderCellsTop: true,
+                searchDelay: 500,
             });
-
+            $('#data_range').change(function(event) {
+                $('#tbl_list').DataTable().ajax.reload(null, false);
+            });
         });
     </script>
 @endsection

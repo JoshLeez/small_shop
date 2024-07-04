@@ -15,7 +15,7 @@ const clear_form = (data) => {
     $(`#${data.modal_id} .modal-title`).text(data.title);
     $(`#${data.modal_id} .btn-submit`).text(data.btn_submit);
     $(`#${data.modal_id} form`).attr(`action`, data.form_action_url);
-    // $(`#${data.modal_id} form`).find("input[type=text], input[type=number], input[type=email], input[type=hidden], input[type=password], textarea").val("");
+    $(`#${data.modal_id} form`).find("input[type=text], input[type=number], input[type=email], input[type=hidden]").val("");
     $(`#${data.modal_id} form`).find(`select`).val("").trigger(`change`);
     $(`#${data.modal_id} form`).find('input,select').removeClass("is-invalid");
     $(`#${data.modal_id} form`).find('span.invalid-feedback').css('display', 'none');
@@ -26,6 +26,7 @@ const stopFormSubmission = (event) => {
 }
 
 const getFormData = (form) =>{
+    if (!form) return {};
     const formData = new FormData(form)
     const formDataObject = {};
 

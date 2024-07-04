@@ -18,9 +18,9 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 //Product
 Route::group([
-    'middleware' => [
-        'auth',
-    ],
+    // 'middleware' => [
+    //     'auth'
+    // ],
     'controller' => App\Http\Controllers\ProductController::class,
     'prefix'=> 'admin/product',
     'as'=>'product.'
@@ -29,4 +29,7 @@ Route::group([
     Route::get('', 'index')->name('index');
     Route::get('dtable-product', 'dtable')->name('dtable');
     Route::post('create-product','store')->name('create');
+    Route::get('edit-product/{id}','edit')->name('edit');
+    Route::put('update-product/{id}','update')->name('update');
+    Route::delete('delete-product/{id}','destroy')->name('destroy');
 });
