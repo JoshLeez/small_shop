@@ -3,14 +3,6 @@
 @section('title', $title)
 @section('page_title', $page_title)
 
-{{-- @section('content_header')
-<div class='card'>
-    <div class="card-header d-flex">
-        <h1 class="card-title">{{$page_title}}</h1>
-        <a href="javascript:void(0)" class="btn btn-primary ml-auto" id="btn_modal_create" onclick="show_modal_create('modal_user')">Create</a>
-    </div>
-</div>
-@stop --}}
 
 @section('content')
     <!-- /.card-header -->
@@ -43,9 +35,13 @@
                     <tr>
                         <th width="25">No</th>
                         <th width="" class="text-center">Name</th>
-                        <th width="" class="text-center">Price</th>
-                        <th width="" class="text-center">Quantity</th>
+                        <th width="" class="text-center">Email</th>
+                        <th width="" class="text-center">Role</th>
+                        <th width="" class="text-center">Created At</th>
+                        <th width="" class="text-center">Updated At</th>
+                        @can('is-developer')
                         <th width="" class="text-center">Action</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody>
@@ -73,12 +69,12 @@
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
                         <div class="form-group">
-                            <label for="price" class="col-form-label">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" required>
+                            <label for="email" class="col-form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="form-group">
-                            <label for="email" class="col-form-label">Quantity</label>
-                            <input type="number" class="form-control" id="qty" name="qty" required>
+                            <label for="role" class="col-form-label">Role</label>
+                            <input type="role" class="form-control" id="role" name="role" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -96,32 +92,32 @@
 @section('js')
     <script type="text/javascript">
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const store_url = "{{ route('product.create') }}";
-        const edit_url = "{{ route('product.edit', 'id') }}";
-        const update_url = "{{ route('product.update', 'id') }}";
+        const store_url = "{{ route('user.create') }}";
+        const edit_url = "{{ route('user.show', 'id') }}";
+        const update_url = "{{ route('user.update', 'id') }}";
         const destroy_url = "{{ route('product.destroy', 'id') }}";
 
         const show_modal_create = (modal_element_id) => {
             let modal_data = {
                 modal_id: modal_element_id,
-                title: "Add New Product",
-                btn_submit: "Add Product",
+                title: "Add New User",
+                btn_submit: "Add User",
                 form_action_url: store_url,
             }
             clear_form(modal_data);
             $(`#${modal_element_id}`).modal('show');
         }
 
-        const show_modal_edit = async (modal_element_id, product_id) => {
+        const show_modal_edit = async (modal_element_id, user_id) => {
             let modal_data = {
                 modal_id: modal_element_id,
-                title: "Edit Product",
+                title: "Edit User",
                 btn_submit: "Save",
-                form_action_url: update_url.replace('id', product_id),
+                form_action_url: update_url.replace('id', user_id),
             }
             clear_form(modal_data);
 
-            const response = await fetch(edit_url.replace('id', product_id), {
+            const response = await fetch(edit_url.replace('id', user_id), {
                 method: "GET",
                 mode: "cors",
                 cache: "no-cache",
@@ -132,12 +128,12 @@
                     "Content-Type": 'application/json',
                 },
             });
-
             if (response.ok) {
                 const editData = await response.json();
+                console.log(editData)
                 $(`#name`).val(editData.data.name);
-                $(`#price`).val(editData.data.price);
-                $(`#qty`).val(editData.data.qty);
+                $(`#email`).val(editData.data.email);
+                $(`#role`).val(editData.data.role);
                 $(`#edit_user_id`).val(editData.data.id);
 
             }
@@ -239,7 +235,7 @@
 
     <script type="text/javascript">
         $(function() {
-            let tableurl = "{{ route('product.dtable') }}"
+            let tableurl = "{{ route('user.dtable') }}"
             var table = $('#tbl_list').DataTable({
                 processing: true,
                 serverSide: true,
@@ -260,12 +256,20 @@
                         name: 'name'
                     },
                     {
-                        data: 'price',
-                        name: 'price'
+                        data: 'email',
+                        name: 'email'
                     },
                     {
-                        data: 'qty',
-                        name: 'qty'
+                        data: 'role',
+                        name: 'role'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'updated_at',
+                        name: 'updated_at'
                     },
                     {
                         data: 'action',
@@ -281,6 +285,18 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 searchDelay: 500,
+                columnDefs: [
+                    {
+                        targets: [1, 2, 3, 4, 5],  // Specify columns you want to check
+                        render: function(data, type, row, meta) {
+                            return data;  // Ensure data is rendered normally
+                        },
+                        visible: function(rowData, rowIndex, column) {
+                            // Check if the data is null or empty and hide column if true
+                            return !(rowData[column] === null || rowData[column] === '');
+                        }
+                    }
+                ]
             });
             $('#data_range').change(function(event) {
                 $('#tbl_list').DataTable().ajax.reload(null, false);

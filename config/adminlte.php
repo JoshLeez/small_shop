@@ -376,6 +376,12 @@ return [
             'icon' => 'fab fa-product-hunt',
             'label_color' => 'success',
         ],
+        [
+            'text' => 'User Management',
+            'url' => '/admin/user',
+            'icon' => 'fas fa-user-alt',
+            'label_color' => 'success',
+        ],
         ['header' => 'labels'],
         [
             'text' => 'important',
