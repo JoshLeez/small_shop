@@ -63,10 +63,10 @@ class ProductController extends Controller
                    'status' => 'success',
                     'message' => 'Successfully create user',
             ], 200);
-        }catch(Error  $er){
+        }catch(\Exception  $ex){
             return response()->json([
                 'status' => 'error',
-                'message' => $er -> getMessage()
+                'message' => $ex -> getMessage()
             ]);
         }
     }

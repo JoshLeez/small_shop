@@ -17,9 +17,11 @@
     <div class="card">
         <div class="card-header d-flex">
             <h1 class="card-title align-self-center">{{ $page_title }}</h1>
+            @can("can:product-create")
             <a href="javascript:void(0)" class="btn btn-primary ml-auto" id="btn_modal_create"
                 onclick="show_modal_create('modal_user')">Create</a>
-        </div>
+            @endcan
+            </div>
         <div class="card-body">
             <div class="row  mb-3">
                 <div class="col-sm-12 d-inline-flex justify-content-end">
@@ -160,11 +162,13 @@
                     referrerPolicy: "no-referrer",
                     headers: {
                         "X-CSRF-TOKEN": token,
+                        "Accept": "application/json",
                         "Content-Type": 'application/json',
                     },
                     body: JSON.stringify(formData)
                 });
                 const responseData = await response.json();
+                console.log(responseData)
                 if (response.ok) { // HTTP status in the range 200-299
                     Swal.fire({
                         type: responseData.status, // Use the icon from response or default to "success"
@@ -174,9 +178,9 @@
                     $('#tbl_list').DataTable().ajax.reload(null, false);
                 } else {
                     Swal.fire({
-                        type: responseData.status, // Use the icon from response or default to "error"
-                        title: responseData.status,
-                        text: responseData.message,
+                        type: 'error',
+                        title: responseData.status || 'Error',
+                        text: responseData.message || 'An unexpected error occurred',
                         showConfirmButton: true,
                     });
                 }
@@ -209,9 +213,10 @@
                         headers: {
                             "X-CSRF-TOKEN": token,
                             "Content-Type": 'application/json',
+                            "Accept": "application/json",          
                         },
                     })
-
+                    
                     if (response.ok) {
                         Swal.fire({
                             title: "Produk berhasil dihapus",
@@ -272,6 +277,7 @@
                         name: 'action',
                         orderable: 'false',
                         searchable: 'false',
+                        visible: @can('product-edit') true @else false @endcan
                     }
                 ],
                 paging: true,

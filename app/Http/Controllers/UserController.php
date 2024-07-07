@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -49,10 +50,12 @@ class UserController extends Controller
 
     public function store(Request $request){
         try{
-            $user = User::create($request->all());
-
-            $user->syncRoles($request->input('role'));
-
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+            ]);
+            $user->syncRoles($request->input('role', 'guest'));
             return  response()->json([
                 'status' => 'success',
                 'message' => 'Successfully create user',
@@ -90,8 +93,9 @@ class UserController extends Controller
 
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->password = $request->password;
 
-            $user->syncRoles($request->input('role'));
+            $user->syncRoles($request->input('role', 'guest'));
 
             return  response()->json([
                 'status' => 'success',

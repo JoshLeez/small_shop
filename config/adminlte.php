@@ -378,6 +378,7 @@ return [
         ],
         [
             'text' => 'User Management',
+            'can' => "product-create",
             'url' => '/admin/user',
             'icon' => 'fas fa-user-alt',
             'label_color' => 'success',

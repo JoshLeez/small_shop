@@ -9,8 +9,10 @@
     <div class="card">
         <div class="card-header d-flex">
             <h1 class="card-title align-self-center">{{ $page_title }}</h1>
+            @can('can:role-create')
             <a href="javascript:void(0)" class="btn btn-primary ml-auto" id="btn_modal_create"
                 onclick="show_modal_create('modal_user')">Create</a>
+            @endcan
         </div>
         <div class="card-body">
             <div class="row  mb-3">
@@ -39,7 +41,7 @@
                         <th width="" class="text-center">Role</th>
                         <th width="" class="text-center">Created At</th>
                         <th width="" class="text-center">Updated At</th>
-                        @can('is-developer')
+                        @can('role-create')
                         <th width="" class="text-center">Action</th>
                         @endcan
                     </tr>
@@ -73,6 +75,10 @@
                             <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="form-group">
+                            <label for="password" class="col-form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="role" required>
+                        </div>
+                        <div class="form-group">
                             <label for="role" class="col-form-label">Role</label>
                             <input type="role" class="form-control" id="role" name="role" required>
                         </div>
@@ -92,7 +98,7 @@
 @section('js')
     <script type="text/javascript">
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const store_url = "{{ route('user.create') }}";
+        const store_url = "{{ route('user.store') }}";
         const edit_url = "{{ route('user.show', 'id') }}";
         const update_url = "{{ route('user.update', 'id') }}";
         const destroy_url = "{{ route('product.destroy', 'id') }}";
@@ -156,6 +162,7 @@
                     referrerPolicy: "no-referrer",
                     headers: {
                         "X-CSRF-TOKEN": token,
+                        "Accept": "application/json",
                         "Content-Type": 'application/json',
                     },
                     body: JSON.stringify(formData)
@@ -170,7 +177,7 @@
                     $('#tbl_list').DataTable().ajax.reload(null, false);
                 } else {
                     Swal.fire({
-                        type: responseData.status, // Use the icon from response or default to "error"
+                        type: "error", // Use the icon from response or default to "error"
                         title: responseData.status,
                         text: responseData.message,
                         showConfirmButton: true,
@@ -276,6 +283,7 @@
                         name: 'action',
                         orderable: 'false',
                         searchable: 'false',
+                        visible: @can('role-edit') true @else false @endcan
                     }
                 ],
                 paging: true,
@@ -285,18 +293,6 @@
                 autoWidth: false,
                 orderCellsTop: true,
                 searchDelay: 500,
-                columnDefs: [
-                    {
-                        targets: [1, 2, 3, 4, 5],  // Specify columns you want to check
-                        render: function(data, type, row, meta) {
-                            return data;  // Ensure data is rendered normally
-                        },
-                        visible: function(rowData, rowIndex, column) {
-                            // Check if the data is null or empty and hide column if true
-                            return !(rowData[column] === null || rowData[column] === '');
-                        }
-                    }
-                ]
             });
             $('#data_range').change(function(event) {
                 $('#tbl_list').DataTable().ajax.reload(null, false);
