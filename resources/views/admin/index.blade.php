@@ -147,9 +147,9 @@
             $(`#${modal_element_id}`).modal('show');
 
         }
-        const submitForm = async (modal_id) => {
+        const submitForm = async (modal_user) => {
             try {
-                let modal = document.getElementById(modal_id)
+                let modal = document.getElementById(modal_user)
                 let form = modal.querySelector('form');
                 let formData = getFormData(form);
                 let edit_modal = form.querySelector('#edit_user_id').value;
@@ -170,12 +170,14 @@
                 const responseData = await response.json();
                 console.log(responseData)
                 if (response.ok) { // HTTP status in the range 200-299
+                    $('#tbl_list').DataTable().ajax.reload(null, false);
+                    $(`#${modal_user}`).modal('hide');
                     Swal.fire({
                         type: responseData.status, // Use the icon from response or default to "success"
                         title: responseData.status,
                         text: responseData.message,
+                        showConfirmButton: true,
                     });
-                    $('#tbl_list').DataTable().ajax.reload(null, false);
                 } else {
                     Swal.fire({
                         type: 'error',
@@ -184,8 +186,6 @@
                         showConfirmButton: true,
                     });
                 }
-                $(`#${modal_id}`).modal('hide');
-
             } catch (error) {
                 console.log(error)
             }
@@ -213,10 +213,10 @@
                         headers: {
                             "X-CSRF-TOKEN": token,
                             "Content-Type": 'application/json',
-                            "Accept": "application/json",          
+                            "Accept": "application/json",
                         },
                     })
-                    
+
                     if (response.ok) {
                         Swal.fire({
                             title: "Produk berhasil dihapus",

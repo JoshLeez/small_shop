@@ -2,6 +2,8 @@
   outline: 1px solid #3498db !important; /* ## Mengubah warna outline (bukan border) saat fokus */
 }
 
+body { padding-right: 0 !important }
+
 .nav.nav-treeview.pl-3 a {
     max-width: 100%;
 }
@@ -33,7 +35,7 @@
 /* ## CSS Dimming Tabel */
 .dimmed-table {
     /* ## Menonaktifkan event mouse selama loading */
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .bg-orange {

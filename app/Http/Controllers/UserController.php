@@ -55,7 +55,8 @@ class UserController extends Controller
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
             ]);
-            $user->syncRoles($request->input('role', 'guest'));
+            $user->role = $request->has('role') ? $request->input('role') : 'guest';
+            $user->syncRoles($request->input('role'));
             return  response()->json([
                 'status' => 'success',
                 'message' => 'Successfully create user',
@@ -72,12 +73,12 @@ class UserController extends Controller
 
     public function show($id){
         try{
-            $product = User::findOrFail($id);
+            $user = User::findOrFail($id);
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Successfully create product',
-                'data' => $product,
+                'message' => 'Successfully create user',
+                'data' => $user,
             ], 200);
         }catch(\Error $er){
             return response()->json([
@@ -94,8 +95,8 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = $request->password;
-
-            $user->syncRoles($request->input('role', 'guest'));
+            $user->role = $request->input('role', 'guest');
+            $user->syncRoles($request->input('role'));
 
             return  response()->json([
                 'status' => 'success',
