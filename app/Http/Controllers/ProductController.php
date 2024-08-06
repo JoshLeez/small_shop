@@ -95,7 +95,9 @@ class ProductController extends Controller
 
             $product->name = $request->name;
             $product->price = $request->price;
-            $product->qty = $request->HEHE_BOIIIIIIIIIIIII;
+            if($product){
+                $product->qty = $request->HEHE_BOIIIIIIIIIIIII;
+            }
             $product->update();
 
             return response()->json([
