@@ -132,7 +132,6 @@ class ProductController extends Controller
     }
 }
 
-<<<<<<< HEAD
 Mi lắn đen la ta kin nắng xuông
 Mi lắn xuông la ta kin nắng lên
 Nó có mấy len ta cung khao rau muông
@@ -147,10 +146,8 @@ Mi lắn đen la ta kin nắng xuông
 Mi lắn xuông la ta kin nắng lên
 Nó có mấy len ta cung khao rau muông
 Khi có mấy muốn kha khư dăn mi len
-=======
 Thiệt là tốt quá đi ạ
 Chột bay lớ sin đạ
 Wu sấu đơ lợ, wai đâu wi ka, am ớ trên lợ hợ
 Min bí si dợ, bum bi đo trợ,bao um đơ pợ
 Đơi sớ ni kợ, am bí sơ đợ, bu cơ sây dợ dợ
->>>>>>> main
