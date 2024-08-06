@@ -96,7 +96,7 @@ class ProductController extends Controller
             $product->name = $request->name;
             $product->price = $request->price;
             $product->qty = $request->qty;
-
+            $HEHE_BOI = "HEHE_BOI";
             $product->update();
 
             return response()->json([
@@ -129,3 +129,8 @@ class ProductController extends Controller
     }
 }
 
+Thiệt là tốt quá đi ạ
+Chột bay lớ sin đạ
+Wu sấu đơ lợ, wai đâu wi ka, am ớ trên lợ hợ
+Min bí si dợ, bum bi đo trợ,bao um đơ pợ
+Đơi sớ ni kợ, am bí sơ đợ, bu cơ sây dợ dợ

@@ -25,7 +25,7 @@ Route::group([
     'controller' => App\Http\Controllers\ProductController::class,
     'prefix'=> 'admin/product',
     'as'=>'product.'
-], function () {
+], function () {g
     //Route::get(url, class function) -> name('name for route');
     Route::get('', 'index')->name('index');
     Route::get('dtable-product', 'dtable')->name('dtable');
